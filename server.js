@@ -2,6 +2,8 @@ const express = require('express');
 const { UUIDV4 } = require('sequelize');
 const Sequelize = require('sequelize');
 
+const _USERS = require('./users');
+
 const app = express();
 const port = 8000;
 
@@ -12,24 +14,31 @@ const connection = new Sequelize('db', 'user', 'pass', {
 });
 
 const User = connection.define('User', {
-  uuid: {
-    type: Sequelize.UUID,
-    defaultValue: UUIDV4,
-  },
   name: Sequelize.STRING,
-  bio: Sequelize.TEXT,
+  email: {
+    type: Sequelize.STRING,
+    validate: {
+      isEmail: true,
+    },
+  },
+  password: {
+    type: Sequelize.STRING,
+    validate: {
+      isAlphanumeric: true,
+    },
+  },
 });
 
 app.get('/', async (req, res) => {
   try {
-    const user = await User.create({
-      name: 'Sunday',
-      bio: 'Software dev',
+    const users = await User.findAll({
+      attributes: ['name']
     });
     res.send({
       status: 'success',
+      result: users.length,
       data: {
-        user,
+        users,
       },
     });
   } catch (err) {
@@ -38,10 +47,7 @@ app.get('/', async (req, res) => {
 });
 
 connection
-  .sync({
-    force: true,
-    logging: console.log,
-  })
+  .sync()
   .then(() => {
     console.log('Connected to sqlite on localhost');
   })
