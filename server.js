@@ -1,11 +1,10 @@
 const express = require('express');
-const { UUIDV4 } = require('sequelize');
 const Sequelize = require('sequelize');
 
 const _USERS = require('./users');
 
 const app = express();
-const port = 8000;
+const port = 3000;
 
 const connection = new Sequelize('db', 'user', 'pass', {
   host: 'localhost',
@@ -29,10 +28,10 @@ const User = connection.define('User', {
   },
 });
 
-app.get('/', async (req, res) => {
+app.route('/').get(async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['name']
+      attributes: ['name'],
     });
     res.send({
       status: 'success',
