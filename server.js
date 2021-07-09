@@ -28,7 +28,7 @@ const User = connection.define('User', {
   },
 });
 
-app.route('/').get(async (req, res) => {
+app.get(async (req, res) => {
   try {
     const users = await User.findAll({
       attributes: ['name'],
